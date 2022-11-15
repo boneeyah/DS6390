@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- LOAD d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Load color scale -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+<!-- create div for graphs -->
+<div id = "week12"></div>
+<style>
+.bubble{
+stroke-width: 2px;
+stroke: white;
+}
+.bubble:hover{
+stroke-width:3px;
+stroke:black;
+}
+</style>
+
+<script>
+  var margin = {top: 50, right: 50, bottom:50, left:50},
+      width = 700 - margin.left -margin.right,
+      height = 700 - margin.top - margin.bottom;
+
+  var svg = d3.select("#week12")
+    .append("svg")
+      .attr("width",width + margin.left + margin.right)
+      .attr("height",height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform","translate("+margin.left+","+margin.top+")");
+
+  //add csv data
+  d3.json("https://raw.githubusercontent.com/boneeyah/DS6390/main/nba_2022_stats.json", function(data){
+    jsondata = data
+    var groupedData = d3.nest()
+      .key(function (d) {return d.Pos;})
+      .key(function (d) {return d.Player;})
+      .rollup()
+      .entries(data);
+    console.log("Array: ", groupedData);
+    d3.treemap()
+      .size([width,height])
+      (groupedData)
+    var color = d3.scaleOrdinal()
+      .domain(["PF","PG","SF","SG","C"])
+      .range(d3.schemeTableau10);
+
+})
+</script>
