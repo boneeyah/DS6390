@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- LOAD d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Load color scale -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+<!-- create div for graphs -->
+<div id = "week12"></div>
+
+<script>
+  var margin = {top: 50, right: 50, bottom:50, left:50},
+      width = 700 - margin.left -margin.right,
+      height = 700 - margin.top - margin.bottom;
+
+  var svg = d3.select("#week12")
+    .append("svg")
+      .attr("width",width + margin.left + margin.right)
+      .attr("height",height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform","translate("+margin.left+","+margin.top+")");
+
+  //add csv data
+  d3.csv("https://raw.githubusercontent.com/boneeyah/DS6390/main/nba_2022_stats.csv", function(data){
+    //add X axis this will be minutes played
+    var x = d3.scaleLinear()
+      .domain([0,600])
+      .range([0,width]);
+    svg.append("g")
+      .attr("transform", "translate(0, "+height+")")
+      .call(d3.axisBottom(x));
+
+    //add Y axis, this will be FGA
+    var y = d3.scaleLinear()
+      .domain([0,350])
+      .range([height,0]);
+    svg.append("g")
+      .call(d3.axisLeft(y));
+
+    //define Z axis, the size of the bubble
+    var z = d3.scaleLinear()
+      .domain([0,400])
+      .range([0,40]);
+
+    var myColor = d3.scaleOrdinal()
+      .domain(["PF","PG","SF","SG","C"])
+      .range(d3.schemeTableau10);
+
+    //add dot values
+    svg.append("g")
+      .selectAll("dot")
+      .data(data)
+      .enter()
+      .append("circle")
+        .attr("cx",function (d){return x(d.MP);})
+        .attr("cy",function(d){return y(d.FGA);})
+        .attr("r",function(d){return z(d.PTS);})
+        .style("fill",function(d){return myColor(d.Pos);})
+  })
+
+</script>
